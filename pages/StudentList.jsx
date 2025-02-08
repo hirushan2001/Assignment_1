@@ -1,10 +1,27 @@
 import { useNavigate } from 'react-router-dom'
 import {useState,useEffect} from 'react'
 import axios from 'axios'
+import toast, { Toaster } from 'react-hot-toast';
+import { Button,Modal } from 'antd';
 
 function StudentList() {
   const navigate = useNavigate()
   const [students,setStudents] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedStudent, setSelectedStudent] = useState(null);
+
+  const showModal = (student) => {
+    setSelectedStudent(student);
+    setIsModalOpen(true);
+  };
+
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
 
   //fetch Student Data
   const fetchStudents = async () => {
@@ -22,13 +39,21 @@ function StudentList() {
   },[])
   
   //delete Student Data
-  const deleteStudent = async (id) => {
-    try {
-      await axios.delete(`https://localhost:7029/api/Students/${id}`)
-      fetchStudents()
-    } catch (error) {
-      console.log(error)
+  const deleteStudent = async () => {
+    if (selectedStudent) {
+      try {
+        await axios.delete(
+          `https://localhost:7029/api/Students/${selectedStudent.id}`
+        );
+        fetchStudents();
+        toast.success("Student deleted successfully");
+      } catch (error) {
+        console.log(error);
+        toast.error("Failed to delete student");
+      }
     }
+    setIsModalOpen(false);
+    setSelectedStudent(null);
   }
   
 
@@ -39,6 +64,7 @@ function StudentList() {
 
   return (
     <div className="container mx-auto p-10">
+      <Toaster />
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Student List</h1>
         <div className="space-x-4">
@@ -47,7 +73,7 @@ function StudentList() {
           </button>
           <button className="bg-blue-500 text-white px-4 py-2 rounded" onClick={() => navigate('/register')}>
             Add New Student
-          </button>
+          </button> 
         </div>
       </div>
 
@@ -96,7 +122,7 @@ function StudentList() {
                   </button>
                   <button
                     className="bg-red-500 text-white px-3 py-1 rounded"
-                    onClick={() => deleteStudent(student.id)}
+                    onClick={() => showModal(student)}
                   >
                     Delete
                   </button>
@@ -106,6 +132,18 @@ function StudentList() {
           </tbody>
         </table>
       </div>
+      <Modal
+         title="Confirm Delete"
+         open={isModalOpen}
+         onOk={deleteStudent}
+         onCancel={handleCancel}
+         maskStyle={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
+         okText="Delete"
+         cancelText="Cancel"
+         okButtonProps={{ danger: true }}
+      >
+      <p>Are you sure you want to delete Student</p>
+      </Modal>
     </div>
   )
 }
