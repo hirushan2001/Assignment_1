@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
 import { Button, Modal, Input } from "antd";
+import { Search } from "lucide-react";
 
 function StudentList() {
   const navigate = useNavigate();
@@ -10,6 +11,7 @@ function StudentList() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [searchPhone, setSearchPhone] = useState("");
   const [formData, setFormData] = useState({
     name: "",
     address: "",
@@ -60,6 +62,28 @@ function StudentList() {
     fetchStudents();
   }, []);
 
+  // Fetch Student Data By Phone Number
+  const fetchStudentByPhone = async () => {
+    try {
+      console.log("fetch student");
+      const response = await axios.get(
+        `https://localhost:7029/api/Students/${searchPhone}`
+      );
+      console.log(response.data);
+
+      if (!response.data || response.data.length === 0) {
+        setStudents([]);
+        toast.error("No student found");
+      } else {
+        setStudents(response.data); // Assuming API returns a single object
+      }
+    } catch (error) {
+      console.log(error);
+      //setStudents([]);
+      toast.error("Failed to fetch student");
+    }
+  };
+
   // Delete Student
   const deleteStudent = async () => {
     if (selectedStudent) {
@@ -106,17 +130,26 @@ function StudentList() {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Student List</h1>
         <div className="space-x-4">
-          <Button
-            onClick={() => navigate("/")}
-            type="primary"
-          >
+          <Button onClick={() => navigate("/")} type="primary">
             Back to Home
           </Button>
-          <Button
-            onClick={() => navigate("/register")}
-            type="primary"
-          >
+          <Button onClick={() => navigate("/register")} type="primary">
             Add New Student
+          </Button>
+        </div>
+      </div>
+
+      <div className="mb-10 relative mt-10">
+        <div className="relative flex items-center gap-4">
+          <p>Phone Number</p>
+          <Input
+            placeholder="Search by phone number..."
+            value={searchPhone}
+            onChange={(e) => setSearchPhone(e.target.value)}
+            className="pl-10 w-full max-w-md "
+          />
+          <Button onClick={fetchStudentByPhone} type="primary">
+            Search
           </Button>
         </div>
       </div>
@@ -146,42 +179,52 @@ function StudentList() {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {students.map((student) => (
-              <tr
-                key={student.id}
-                className="hover:bg-gray-50 transition-colors"
-              >
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {student.name}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {student.address}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {student.dob}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {student.email}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {student.phone}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 space-x-2">
-                  <Button
-                    color="green" variant="solid"
-                    onClick={() => showEditModal(student)}
-                  >
-                    Update
-                  </Button>
-                  <Button
-                    color="danger" variant="solid"
-                    onClick={() => showDeleteModal(student)}
-                  >
-                    Delete
-                  </Button>
+            {students.length > 0 ? (
+              students.map((student) => (
+                <tr
+                  key={student.id}
+                  className="hover:bg-gray-50 transition-colors"
+                >
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {student.name}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {student.address}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {student.dob}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {student.email}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {student.phone}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 space-x-2">
+                    <Button
+                      color="green"
+                      variant="solid"
+                      onClick={() => showEditModal(student)}
+                    >
+                      Update
+                    </Button>
+                    <Button
+                      color="danger"
+                      variant="solid"
+                      onClick={() => showDeleteModal(student)}
+                    >
+                      Delete
+                    </Button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="6" className="text-center py-4 text-gray-500">
+                  No student found
                 </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>
@@ -231,7 +274,10 @@ function StudentList() {
             />
           </div>
         ) : (
-          <p>Are you sure you want to delete this student <span className="font-bold">{selectedStudent?.name}</span>?</p>
+          <p>
+            Are you sure you want to delete this student{" "}
+            <span className="font-bold">{selectedStudent?.name}</span>?
+          </p>
         )}
       </Modal>
     </div>
