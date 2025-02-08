@@ -106,18 +106,18 @@ function StudentList() {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Student List</h1>
         <div className="space-x-4">
-          <button
-            className="bg-blue-500 text-white px-4 py-2 rounded"
+          <Button
             onClick={() => navigate("/")}
+            type="primary"
           >
             Back to Home
-          </button>
-          <button
-            className="bg-blue-500 text-white px-4 py-2 rounded"
+          </Button>
+          <Button
             onClick={() => navigate("/register")}
+            type="primary"
           >
             Add New Student
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -167,18 +167,18 @@ function StudentList() {
                   {student.phone}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 space-x-2">
-                  <button
-                    className="bg-green-500 text-white px-3 py-1 rounded"
+                  <Button
+                    color="green" variant="solid"
                     onClick={() => showEditModal(student)}
                   >
                     Update
-                  </button>
-                  <button
-                    className="bg-red-500 text-white px-3 py-1 rounded"
+                  </Button>
+                  <Button
+                    color="danger" variant="solid"
                     onClick={() => showDeleteModal(student)}
                   >
                     Delete
-                  </button>
+                  </Button>
                 </td>
               </tr>
             ))}
