@@ -205,7 +205,7 @@ function StudentList() {
         okButtonProps={{ danger: !isEditing }}
       >
         {isEditing ? (
-          <div className="space-y-6">
+          <div className="flex flex-col gap-y-1">
             <Input
               placeholder="Name"
               name="name"
