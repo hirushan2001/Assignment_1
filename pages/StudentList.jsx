@@ -2,8 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
-import { Button, Modal, Input } from "antd";
-import { Search } from "lucide-react";
+import { Button, Modal, Input, Table } from "antd";
 
 function StudentList() {
   const navigate = useNavigate();
@@ -20,14 +19,12 @@ function StudentList() {
     phone: "",
   });
 
-  // Show Delete Modal
   const showDeleteModal = (student) => {
     setSelectedStudent(student);
     setIsEditing(false);
     setIsModalOpen(true);
   };
 
-  // Show Edit Modal
   const showEditModal = (student) => {
     setSelectedStudent(student);
     setFormData({
@@ -47,14 +44,13 @@ function StudentList() {
     setIsEditing(false);
   };
 
-  // Fetch Student Data
   const fetchStudents = async () => {
     try {
-      console.log("get data from api");
+      console.log("Fetching student data...");
       const response = await axios.get("https://localhost:7029/api/Students");
       setStudents(response.data);
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
@@ -62,29 +58,25 @@ function StudentList() {
     fetchStudents();
   }, []);
 
-  // Fetch Student Data By Phone Number
   const fetchStudentByPhone = async () => {
     try {
-      console.log("fetch student");
+      console.log("Fetching student by phone...");
       const response = await axios.get(
         `https://localhost:7029/api/Students/${searchPhone}`
       );
-      console.log(response.data);
 
       if (!response.data || response.data.length === 0) {
         setStudents([]);
         toast.error("No student found");
       } else {
-        setStudents(response.data); // Assuming API returns a single object
+        setStudents(response.data); // Wrap single object in an array
       }
     } catch (error) {
-      console.log(error);
-      //setStudents([]);
+      console.error(error);
       toast.error("Failed to fetch student");
     }
   };
 
-  // Delete Student
   const deleteStudent = async () => {
     if (selectedStudent) {
       try {
@@ -94,19 +86,17 @@ function StudentList() {
         fetchStudents();
         toast.success("Student deleted successfully");
       } catch (error) {
-        console.log(error);
+        console.error(error);
         toast.error("Failed to delete student");
       }
     }
     handleCancel();
   };
 
-  // Handle Edit Input Change
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Update Student Data
   const updateStudent = async () => {
     if (selectedStudent) {
       try {
@@ -117,12 +107,54 @@ function StudentList() {
         fetchStudents();
         toast.success("Student updated successfully");
       } catch (error) {
-        console.log(error);
+        console.error(error);
         toast.error("Failed to update student");
       }
     }
     handleCancel();
   };
+
+  const columns = [
+    {
+      title: "Name",
+      dataIndex: "name",
+      key: "name",
+    },
+    {
+      title: "Address",
+      dataIndex: "address",
+      key: "address",
+    },
+    {
+      title: "Date of Birth",
+      dataIndex: "dob",
+      key: "dob",
+    },
+    {
+      title: "Email",
+      dataIndex: "email",
+      key: "email",
+    },
+    {
+      title: "Phone",
+      dataIndex: "phone",
+      key: "phone",
+    },
+    {
+      title: "Action",
+      key: "action",
+      render: (_, student) => (
+        <div className="space-x-2">
+          <Button type="primary" onClick={() => showEditModal(student)}>
+            Update
+          </Button>
+          <Button danger onClick={() => showDeleteModal(student)}>
+            Delete
+          </Button>
+        </div>
+      ),
+    },
+  ];
 
   return (
     <div className="container mx-auto p-10">
@@ -154,80 +186,13 @@ function StudentList() {
         </div>
       </div>
 
-      <div className="overflow-x-auto shadow-md rounded-lg">
-        <table className="min-w-full table-auto">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Name
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Address
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Date Of Birth
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Email
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Phone
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Action
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {students.length > 0 ? (
-              students.map((student) => (
-                <tr
-                  key={student.id}
-                  className="hover:bg-gray-50 transition-colors"
-                >
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {student.name}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {student.address}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {student.dob}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {student.email}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {student.phone}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 space-x-2">
-                    <Button
-                      color="green"
-                      variant="solid"
-                      onClick={() => showEditModal(student)}
-                    >
-                      Update
-                    </Button>
-                    <Button
-                      color="danger"
-                      variant="solid"
-                      onClick={() => showDeleteModal(student)}
-                    >
-                      Delete
-                    </Button>
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="6" className="text-center py-4 text-gray-500">
-                  No student found
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+      {/* Ant Design Table */}
+      <Table
+        dataSource={students}
+        columns={columns}
+        rowKey="id"
+        className="shadow-md rounded-lg"
+      />
 
       {/* Edit/Delete Modal */}
       <Modal
@@ -235,7 +200,6 @@ function StudentList() {
         open={isModalOpen}
         onOk={isEditing ? updateStudent : deleteStudent}
         onCancel={handleCancel}
-        maskStyle={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
         okText={isEditing ? "Save" : "Delete"}
         cancelText="Cancel"
         okButtonProps={{ danger: !isEditing }}
