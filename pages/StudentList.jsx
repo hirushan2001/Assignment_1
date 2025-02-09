@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
-import { Button, Modal, Input, Table } from "antd";
+import { Button, Modal, Input, Table ,Spin } from "antd";
 
 function StudentList() {
   const navigate = useNavigate();
@@ -11,6 +11,7 @@ function StudentList() {
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [searchPhone, setSearchPhone] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
   const [formData, setFormData] = useState({
     name: "",
     address: "",
@@ -44,11 +45,13 @@ function StudentList() {
     setIsEditing(false);
   };
 
+  //fetch student
   const fetchStudents = async () => {
     try {
-      console.log("Fetching student data...");
+      console.log("Fetch student data");
       const response = await axios.get("https://localhost:7029/api/Students");
       setStudents(response.data);
+      setIsLoading(false);
     } catch (error) {
       console.error(error);
     }
@@ -58,9 +61,10 @@ function StudentList() {
     fetchStudents();
   }, []);
 
+  //fetch student by phone
   const fetchStudentByPhone = async () => {
     try {
-      console.log("Fetching student by phone...");
+      console.log("Fetch student");
       const response = await axios.get(
         `https://localhost:7029/api/Students/${searchPhone}`
       );
@@ -69,7 +73,7 @@ function StudentList() {
         setStudents([]);
         toast.error("No student found");
       } else {
-        setStudents(response.data); // Wrap single object in an array
+        setStudents(response.data);
       }
     } catch (error) {
       console.error(error);
@@ -77,6 +81,7 @@ function StudentList() {
     }
   };
 
+  //delete student
   const deleteStudent = async () => {
     if (selectedStudent) {
       try {
@@ -97,6 +102,7 @@ function StudentList() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  //update student
   const updateStudent = async () => {
     if (selectedStudent) {
       try {
@@ -118,31 +124,25 @@ function StudentList() {
     {
       title: "Name",
       dataIndex: "name",
-      key: "name",
     },
     {
       title: "Address",
       dataIndex: "address",
-      key: "address",
     },
     {
       title: "Date of Birth",
       dataIndex: "dob",
-      key: "dob",
     },
     {
       title: "Email",
       dataIndex: "email",
-      key: "email",
     },
     {
       title: "Phone",
       dataIndex: "phone",
-      key: "phone",
     },
     {
       title: "Action",
-      key: "action",
       render: (_, student) => (
         <div className="space-x-2">
           <Button type="primary" onClick={() => showEditModal(student)}>
@@ -156,7 +156,16 @@ function StudentList() {
     },
   ];
 
+  if (isLoading) {
+      return (
+        <div className="min-h-screen flex items-center justify-center bg-gray-50">
+          <Spin size="large" />
+        </div>
+      );
+    }
+
   return (
+
     <div className="container mx-auto p-10">
       <Toaster />
       <div className="flex justify-between items-center mb-6">
@@ -186,7 +195,6 @@ function StudentList() {
         </div>
       </div>
 
-      {/* Ant Design Table */}
       <Table
         dataSource={students}
         columns={columns}
@@ -194,7 +202,6 @@ function StudentList() {
         className="shadow-md rounded-lg"
       />
 
-      {/* Edit/Delete Modal */}
       <Modal
         title={isEditing ? "Edit Student" : "Confirm Delete"}
         open={isModalOpen}
