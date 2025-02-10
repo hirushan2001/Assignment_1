@@ -2,7 +2,21 @@ import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
-import { Button, Modal, Input, Table ,Spin } from "antd";
+import { Table, Spin } from "antd";
+import {
+  Modal,
+  Box,
+  Typography,
+  Button,
+  TextField,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  
+} from "@mui/material";
 
 function StudentList() {
   const navigate = useNavigate();
@@ -145,11 +159,15 @@ function StudentList() {
     {
       title: "Action",
       render: (_, student) => (
-        <div className="space-x-2">
-          <Button type="primary" onClick={() => showEditModal(student)}>
+        <div className="flex flex-row items-center gap-3">
+          <Button variant="contained" onClick={() => showEditModal(student)}>
             Update
           </Button>
-          <Button danger onClick={() => showDeleteModal(student)}>
+          <Button
+            variant="outlined"
+            color="error"
+            onClick={() => showDeleteModal(student)}
+          >
             Delete
           </Button>
         </div>
@@ -158,24 +176,23 @@ function StudentList() {
   ];
 
   if (isLoading) {
-      return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50">
-          <Spin size="large" />
-        </div>
-      );
-    }
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <Spin size="large" />
+      </div>
+    );
+  }
 
   return (
-
     <div className="container mx-auto p-10">
       <Toaster />
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Student List</h1>
-        <div className="space-x-4">
-          <Button onClick={() => navigate("/")} type="primary">
+        <h1 className="text-3xl font-bold">Student List</h1>
+        <div className="flex flex-row items-center gap-3">
+          <Button onClick={() => navigate("/")} variant="contained">
             Back to Home
           </Button>
-          <Button onClick={() => navigate("/register")} type="primary">
+          <Button onClick={() => navigate("/register")} variant="contained">
             Add New Student
           </Button>
         </div>
@@ -183,14 +200,15 @@ function StudentList() {
 
       <div className="mb-10 relative mt-10">
         <div className="relative flex items-center gap-4">
-          <p>Phone Number</p>
-          <Input
-            placeholder="Search by phone number..."
+          <p className="font-bold">Phone Number</p>
+          <TextField
+            label="Search by phone number"
             value={searchPhone}
             onChange={(e) => setSearchPhone(e.target.value)}
             className="pl-10 w-full max-w-md "
+            size="small"
           />
-          <Button onClick={fetchStudentByPhone} type="primary">
+          <Button onClick={fetchStudentByPhone} variant="contained">
             Search
           </Button>
         </div>
@@ -203,54 +221,70 @@ function StudentList() {
         className="shadow-md rounded-lg"
       />
 
-      <Modal
-        title={isEditing ? "Edit Student" : "Confirm Delete"}
-        open={isModalOpen}
-        onOk={isEditing ? updateStudent : deleteStudent}
-        onCancel={handleCancel}
-        okText={isEditing ? "Save" : "Delete"}
-        cancelText="Cancel"
-        okButtonProps={{ danger: !isEditing }}
-      >
-        {isEditing ? (
-          <div className="flex flex-col gap-y-1">
-            <Input
-              placeholder="Name"
-              name="name"
-              value={formData.name}
-              onChange={handleInputChange}
-            />
-            <Input
-              placeholder="Address"
-              name="address"
-              value={formData.address}
-              onChange={handleInputChange}
-            />
-            <Input
-              placeholder="Date of Birth"
-              name="dob"
-              value={formData.dob}
-              onChange={handleInputChange}
-            />
-            <Input
-              placeholder="Email"
-              name="email"
-              value={formData.email}
-              onChange={handleInputChange}
-            />
-            <Input
-              placeholder="Phone"
-              name="phone"
-              value={formData.phone}
-              onChange={handleInputChange}
-            />
+      <Modal open={isModalOpen} onClose={handleCancel}>
+        <Box className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white -lg p-6 rounded-lg w-96">
+          <Typography variant="h6">
+            {isEditing ? "Edit Student" : "Confirm Delete"}
+          </Typography>
+
+          {isEditing ? (
+            <div className="flex flex-col gap-4 mt-5">
+              <TextField
+                label="Name"
+                name="name"
+                value={formData.name}
+                onChange={handleInputChange}
+                size="medium"
+              />
+              <TextField
+                label="Address"
+                name="address"
+                value={formData.address}
+                onChange={handleInputChange}
+                size="small"
+              />
+              <TextField
+                label="Date of Birth"
+                name="dob"
+                value={formData.dob}
+                onChange={handleInputChange}
+                size="small"
+              />
+              <TextField
+                label="Email"
+                name="email"
+                value={formData.email}
+                onChange={handleInputChange}
+                size="small"
+              />
+              <TextField
+                label="Phone"
+                name="phone"
+                value={formData.phone}
+                onChange={handleInputChange}
+                size="small"
+              />
+            </div>
+          ) : (
+            <Typography className="text-gray-700 ">
+              Are you sure you want to delete
+              <strong> {selectedStudent?.name}</strong>?
+            </Typography>
+          )}
+
+          <div className="flex justify-end gap-3 mt-6">
+            <Button onClick={handleCancel} className="text-gray-700 ">
+              Cancel
+            </Button>
+            <Button
+              onClick={isEditing ? updateStudent : deleteStudent}
+              variant="contained"
+              color={isEditing ? "primary" : "error"}
+            >
+              {isEditing ? "Save" : "Delete"}
+            </Button>
           </div>
-        ) : (
-          <p>
-            Are you sure you want to delete this student{" "}
-            <span className="font-bold">{selectedStudent?.name}</span>?
-          </p>
-        )}
+        </Box>
       </Modal>
     </div>
   );

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button, Input, Radio, DatePicker, message, Table } from "antd";
+import { Input, Radio, DatePicker, Table,Form } from "antd";
+import { Button,TextField,RadioGroup } from "@mui/material";
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
 
@@ -61,7 +62,7 @@ const RegistrationForm = () => {
       console.log(response.data);
       toast.success("Students added successfully");
 
-      setStudents([]); // Clear the list after submission
+      setStudents([]); 
     } catch (error) {
       console.error(error);
       toast.error("Failed to add students");
@@ -99,7 +100,6 @@ const RegistrationForm = () => {
     }
   };
 
-  // Define columns for Ant Design Table
   const columns = [
     {
       title: "Name",
@@ -121,15 +121,15 @@ const RegistrationForm = () => {
   ];
 
   return (
-    <div className="container mx-auto p-10 bg-gray-100 min-h-screen">
+    <div className="container mx-auto p-10 bg-gray-100 min-h-screen ">
       <Toaster />
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Student Registration</h1>
-        <div className="space-x-4">
-          <Button onClick={() => navigate("/")} type="primary">
+        <div className="flex flex-row items-center gap-3">
+          <Button onClick={() => navigate("/")} variant="contained">
             Back to Home
           </Button>
-          <Button onClick={() => navigate("/students")} type="primary">
+          <Button onClick={() => navigate("/students")} variant="contained">
             Student List
           </Button>
         </div>
@@ -139,22 +139,26 @@ const RegistrationForm = () => {
         <div className="grid grid-cols-2 gap-6">
           <div>
             <label className="block mb-2">Full Name</label>
-            <Input
-              placeholder="Enter full name"
+            <TextField
+              label="Enter full name"
               value={formData.fullName}
               onChange={(e) => handleInputChange("fullName", e.target.value)}
               status={errors.fullName ? "error" : ""}
+              fullWidth
+              size="small"
             />
             {errors.fullName && <div className="text-red-500 text-sm mt-1">{errors.fullName}</div>}
           </div>
 
           <div>
             <label className="block mb-2">Address</label>
-            <Input
-              placeholder="Enter address"
+            <TextField
+              label="Enter address"
               value={formData.address}
               onChange={(e) => handleInputChange("address", e.target.value)}
               status={errors.address ? "error" : ""}
+              fullWidth
+              size="small"
             />
             {errors.address && <div className="text-red-500 text-sm mt-1">{errors.address}</div>}
           </div>
@@ -180,29 +184,33 @@ const RegistrationForm = () => {
 
           <div>
             <label className="block mb-2">Email</label>
-            <Input
-              placeholder="Enter email"
+            <TextField
+              label="Enter email"
               value={formData.email}
               onChange={(e) => handleInputChange("email", e.target.value)}
               status={errors.email ? "error" : ""}
+              fullWidth
+              size="small"
             />
             {errors.email && <div className="text-red-500 text-sm mt-1">{errors.email}</div>}
           </div>
 
           <div>
             <label className="block mb-2">Telephone</label>
-            <Input
-              placeholder="Enter telephone number"
+            <TextField
+              label="Enter telephone number"
               value={formData.telephone}
               onChange={(e) => handleInputChange("telephone", e.target.value)}
               status={errors.telephone ? "error" : ""}
+              fullWidth
+              size="small"
             />
             {errors.telephone && <div className="text-red-500 text-sm mt-1">{errors.telephone}</div>}
           </div>
         </div>
 
         <div className="flex justify-end space-x-4 mt-6">
-          <Button onClick={handleAddStudent} type="primary">
+          <Button onClick={handleAddStudent} variant="contained">
             Add Student
           </Button>
         </div>
@@ -217,7 +225,7 @@ const RegistrationForm = () => {
       </div>
 
       <div className="mt-6 flex justify-end">
-        <Button onClick={saveStudents} type="primary">
+        <Button onClick={saveStudents} variant="contained">
           Submit
         </Button>
       </div>

@@ -1,30 +1,34 @@
 import { useNavigate } from 'react-router-dom';
+import { Button } from '@mui/material';
 
 function Home() {
   const navigate = useNavigate();
-
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+  <>
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 ">
       <div className="w-full max-w-md p-6 bg-white rounded">
-        <h1 className="text-2xl text-center mb-6">
+        <h1 className="text-2xl text-bold text-center mb-6 ">
           Student Management System
         </h1>
-        <div className="space-y-4">
-          <button 
-            className="w-full p-2 bg-blue-500 text-white rounded hover:bg-blue-600" 
+        <div className=" flex flex-col items-center gap-3">
+          <Button 
+            variant="contained"
+            className="w-full" 
             onClick={() => navigate('/students')}
           >
             View Student List
-          </button>
-          <button 
-            className="w-full p-2 bg-blue-500 text-white rounded hover:bg-blue-600" 
+          </Button>
+          <Button 
+            variant="outlined"
+            className="w-full" 
             onClick={() => navigate('/register')}
           >
             Register New Student
-          </button>
+          </Button>
         </div>
       </div>
     </div>
+    </>
   );
 }
 
